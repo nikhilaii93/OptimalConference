@@ -26,17 +26,138 @@ class compare
 {
 public:
     compare(){};
-    bool operator() (const pair<int,double>& s1, const pair<int,double>& s2)
+    bool operator() (const pair<pair<int,int>,double>& s1, const pair<<pair<int,int>,double>& s2)
     {
         return (s1.second < s2.second);
     }
 };
 
-void (push)
+vector<pair<pair<int,int>,double> > getSwaps()
+{
+    int pt = conference->getParallelTracks();
+    int st = conference->getSessionsInTrack();
+    int ps = conference->getPapersInSession();
+    int n = pt*st*ps;
+    vector<pair<pair<int,int>,double> > possSwaps;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i+1; j < n; j++)
+        {
+            double diff = getPaperSwapDiff(i,j);
+            if (diff >= MIN_IMPROVEMENT
+                || (DO_SHOULDER && diff >= 0)
+                || DO_BAD_MOVES)
+            {
+                pair<int,int> currP = make_pair(i,j);
+                pair<pair<int,int>,double> currS = make_pair(currP,diff);
+                possSwaps.push_back(currS);
+            }
+        }
+    }
+    return possSwaps;
+}
+
+pair<pair<int,int>,double> getValidSwap(vector<pair<pair<int,int>,double> > possSwaps)
+{   
+    pair<int,int> validSwap = NULL;
+    for (int i = possSwaps.size()-1; i >= 0 ; i--)
+    {
+        pair<<pair<int,int>,double> possSwap = possSwaps[i];
+            if (TABU_LIST_SIZE > 0)
+            {
+                swapPapers(this, possSwap.first.first, possSwap.first.second);
+                string possStr = solToStr(this);
+                swapPapers(this, possSwap.first.first, possSwap.first.second);
+                if (checkTabu(possStr)
+                {
+                    continue;
+                }
+            }
+
+            if (possSwap.second < MIN_IMPROVEMENT)
+            {
+                break;
+            }
+
+            validSwap = possSwap;
+            break;
+    }
+    return validSwap;
+}
+
+bool doSomething()
+{   
+    srand (time(NULL));
+    DO_BAD_MOVES = (rand() % 10 + 1 > BAD_MOVE_THRESHOLD);
+    DO_SHOULDER = (CURR_SHOULDER < ALLOWED_SHOULDER);
+
+    vector<pair<pair<int,int>,double> > possSwaps = getSwaps();
+
+    boolean DO_RANDOM_SWAPS = false;
+    if (rand() % 10 + 1 > BAD_MOVE_THRESHOLD)
+    {
+        random_shuffle(possSwaps);
+        DO_RANDOM_SWAPS = true;
+    }
+    else
+    {
+        sort(possSwaps.begin(), possSwaps.end(), compare());
+    }
+
+    MIN_IMPROVEMENT = MIN_THRESHOLD;
+    if (CURR_SHOULDER < ALLOWED_SHOULDER)
+    {
+    MIN_IMPROVEMENT = 0;
+    }
+    if (DO_RANDOM_SWAPS)
+    {
+        MIN_IMPROVEMENT = DBL_MIN;
+    }
+
+    pair<int,int> selSwap = getValidSwap(possSwaps);
+
+    if (selSwap != NULL)
+    {
+        if (!DO_RANDOM_SWAPS && selSwap.second >= MIN_THRESHOLD)
+        {
+            CURR_SHOULDER = 0;
+        }
+        else if (!DO_RANDOM_SWAPS
+                && selSwap.second >= 0 && CURR_SHOULDER < ALLOWED_SHOULDER)
+        {
+            CURR_SHOULDER++;
+            TOTAL_SHOULDER++;
+        }
+
+        swapPapers(this, selSwap.first.first, selSwap.first.second);
+
+        double score = CURR_SCORE + selSwap.second;
+
+        int session1 = conference->paperInfo[selSwap.first.first].second;
+        int session2 = conference->paperInfo[selSwap.first.second].second;
+        
+        enqueueTabu(this);
+        CURR_SCORE = score;
+        cout << "CURR_SCORE: " << CURR_SCORE << " BEST_SCORE: " << BEST_SCORE << endl;
+        if (CURR_SCORE > BEST_SCORE) {
+            BEST_SCORE = CURR_SCORE;
+            BEST_SOL = solToStr(this);
+        }
+        return true;
+    } else {
+        return false;
+    }
+}
 
 void SessionOrganizer::organizePapers()
-{
-    
+{   
+    long start = time(0);
+    while(processingTimeInMinutes*60-10 > end-start) {
+        if (!doSomething()) {
+            setRandom();
+        }
+        long end = time(0);
+    }
 }
 
 void SessionOrganizer::readInInputFile ( string filename )

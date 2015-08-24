@@ -36,6 +36,14 @@ public void enqueueTabu(SessionOrganizer* sorg)
 public bool checkTabu(string str)
 {
 	string str = solToStr(sorg);
+	TabuList* curr = headTabu;
+	for (int i = 0; i < CURR_TABU_SIZE; i++) {
+		if (curr.val == str) {
+			return true;
+		}
+		curr = curr->next;
+	}
+	return false;
 }
 
 public void dequeueTabu()

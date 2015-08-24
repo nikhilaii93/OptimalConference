@@ -81,7 +81,7 @@ public void swapPapers(SesssionOrganizer* sorg, int paper1, int paper2)
 	return;
 }
 
-public void getPaperSwapDiff(SessionOrganizer* sorg, int paper1, int paper2)
+public double getPaperSwapDiff(SessionOrganizer* sorg, int paper1, int paper2)
 {
 	double diff = 0.0;
 
@@ -132,7 +132,7 @@ public void swapSessions(SessionOrganizer* sorg, int track1, int session1, int t
 }
 
 // This function doesn't actually swap the sessions.
-public void getSessionSwapDiff(SessionOrganizer* sorg, int track1, int session1, int track2, int session2)
+public double getSessionSwapDiff(SessionOrganizer* sorg, int track1, int session1, int track2, int session2)
 {
 	double diff = 0.0;
 

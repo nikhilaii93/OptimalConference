@@ -6,11 +6,6 @@
 
 #include "Conference.h"
 
-/**
- * Indexed by paperId. Records track number and session of the paper.
- */
-vector<pair<int,int> > paperInfo;
-
 Conference::Conference ( )
 {
     this->parallelTracks = 0;

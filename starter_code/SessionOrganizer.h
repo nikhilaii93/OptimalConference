@@ -17,6 +17,11 @@
 #include "Conference.h"
 #include "Track.h"
 #include "Session.h"
+#include "TabuList.h"
+#include "Randomizer.h"
+#include "Swapper.h"
+#include <time.h>
+#include <cfloat>
 
 using namespace std;
 
@@ -46,7 +51,21 @@ public:
     SessionOrganizer();
     SessionOrganizer(string filename);
     
-    
+    double MIN_THRESHOLD = 0.005;
+    double MIN_IMPROVEMENT = MIN_THRESHOLD;
+    bool DO_SHOULDER = false;
+    int ALLOWED_SHOULDER = 0;
+    int TOTAL_SHOULDER = 0;
+    int CURR_SHOULDER = 0;
+    bool DO_BAD_MOVES = false;
+    int ALLOWED_BAD_MOVES = 0;
+    int TOTAL_BAD_MOVES = 0;
+    double BAD_MOVE_THRESHOLD =  2;
+
+    double BEST_SCORE = 0.0;
+    string BEST_SOL;
+    double CURR_SCORE = 0.0
+
     /**
      * Read in the number of parallel tracks, papers in session, sessions
      * in a track, and the similarity matrix from the specified filename.

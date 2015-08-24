@@ -30,11 +30,12 @@ int main ( int argc, char** argv )
     organizer->organizePapers ( );
 
     cout << "organization:"<<endl;
-    organizer->printSessionOrganiser ( );
+    // organizer->printSessionOrganiser ( );
+    cout << organizer->BEST_SOL;
 
     // Score the organization against the gold standard.
-    double score = organizer->scoreOrganization ( );
-    cout<< "score:"<<score<<endl;
+    // double score = organizer->scoreOrganization ( );
+    cout<< "score:"<<organizer->BEST_SCORE<<endl;
 
     return 0;
 }
