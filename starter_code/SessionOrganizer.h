@@ -18,7 +18,6 @@
 #include "Track.h"
 #include "Session.h"
 #include "TabuList.h"
-#include "Randomizer.h"
 #include "Swapper.h"
 #include <time.h>
 #include <cfloat>
@@ -51,20 +50,21 @@ public:
     SessionOrganizer();
     SessionOrganizer(string filename);
     
-    double MIN_THRESHOLD = 0.005;
-    double MIN_IMPROVEMENT = MIN_THRESHOLD;
-    bool DO_SHOULDER = false;
-    int ALLOWED_SHOULDER = 0;
-    int TOTAL_SHOULDER = 0;
-    int CURR_SHOULDER = 0;
-    bool DO_BAD_MOVES = false;
-    int ALLOWED_BAD_MOVES = 0;
-    int TOTAL_BAD_MOVES = 0;
-    double BAD_MOVE_THRESHOLD =  2;
+    int TABU_SIZE;
+    double MIN_THRESHOLD;
+    double MIN_IMPROVEMENT;
+    bool DO_SHOULDER;
+    int ALLOWED_SHOULDER;
+    int TOTAL_SHOULDER;
+    int CURR_SHOULDER;
+    bool DO_BAD_MOVES;
+    int ALLOWED_BAD_MOVES;
+    int TOTAL_BAD_MOVES;
+    double BAD_MOVE_THRESHOLD;
 
-    double BEST_SCORE = 0.0;
-    string BEST_SOL;
-    double CURR_SCORE = 0.0
+    double BEST_SCORE;
+    char* BEST_SOL;
+    double CURR_SCORE;
 
     /**
      * Read in the number of parallel tracks, papers in session, sessions
@@ -97,6 +97,18 @@ public:
     
     
     void printSessionOrganiser();
+
+    vector<pair<pair<int,int>,double> > getSwaps();
+
+    pair<pair<int,int>,double> getValidSwap(vector<pair<pair<int,int>,double> > possSwaps);
+
+    bool doSomething();
+
+    char* solToStr();
+
+    vector<int> generateRandom(int n);
+
+    void setRandom();
 };
 
 #endif	/* SESSIONORGANIZER_H */

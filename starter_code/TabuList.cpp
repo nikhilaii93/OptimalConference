@@ -1,20 +1,25 @@
 #include "TabuList.h"
 
-public void initTabuSize(int size)
+Tabu* headTabu;
+Tabu* lastTabu;
+int TABU_LIST_SIZE;
+int CURR_TABU_SIZE;
+
+void initTabuSize(int size)
 {
 	TABU_LIST_SIZE = size;
 }
 
-public void enqueueTabu(SessionOrganizer* sorg)
+void enqueueTabu(char* str)
 {
-	string str = solToStr(sorg);
 	if (!checkTabu(str) && TABU_LIST_SIZE > 0)
 	{
-		if (headTabu == NULL)
+		if (CURR_TABU_SIZE == 0)
 		{
-			headTabu = new TabuList;
+			headTabu = (Tabu *)malloc(sizeof(Tabu));
 			headTabu->next = NULL;
-			headTabu->val = solToStr(sorg);
+			headTabu->val = (char *)malloc(strlen(str)+1);
+			strcpy(headTabu->val,str);
 			lastTabu = headTabu;
 		}
 		else
@@ -23,7 +28,7 @@ public void enqueueTabu(SessionOrganizer* sorg)
 			{
 				dequeueTabu();
 			}
-			TabuList* currTabu = new TabuList;
+			Tabu* currTabu = new Tabu;
 			currTabu->next = NULL;
 			currTabu->val = str;
 			lastTabu->next = currTabu;
@@ -33,12 +38,13 @@ public void enqueueTabu(SessionOrganizer* sorg)
 	}
 }
 
-public bool checkTabu(string str)
+bool checkTabu(char* str)
 {
-	string str = solToStr(sorg);
-	TabuList* curr = headTabu;
-	for (int i = 0; i < CURR_TABU_SIZE; i++) {
-		if (curr.val == str) {
+	Tabu* curr = headTabu;
+	for (int i = 0; i < CURR_TABU_SIZE; i++)
+	{
+		if (!strcmp(curr->val,str))
+		{
 			return true;
 		}
 		curr = curr->next;
@@ -46,35 +52,16 @@ public bool checkTabu(string str)
 	return false;
 }
 
-public void dequeueTabu()
+void dequeueTabu()
 {
 	if (CURR_TABU_SIZE == TABU_LIST_SIZE && headTabu != NULL)
 	{
-		TabuList* toDel = headTabu;
+		Tabu* toDel = headTabu;
 		headTabu = headTabu->next;
 		CURR_TABU_SIZE--;
+		free(toDel->val);
 		free(toDel);
 	}
 }
 
-public string solToStr(SessionOrganizer* sorg)
-{
-	string str = "";
-	for ( int i = 0; i < sorg->conference->getSessionsInTrack(); i++ )
-    {
-        for ( int j = 0; j < sorg->conference->getParallelTracks(); j++ )
-        {
-            for ( int k = 0; k < sorg->conference->getPapersInSession(); k++ )
-            {
-                str += conference->tracks[j].getSession(i).getPaper(k);
-                str += " ";
-            }
-            if (j != sorg->conference->getParallelTracks() - 1)
-            {
-                str += "| ";
-            }
-        }
-        str += "\n";
-    }
-    return str;
-}
+

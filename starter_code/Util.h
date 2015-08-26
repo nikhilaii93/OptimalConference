@@ -35,5 +35,20 @@ void splitString(string message, string delimiter, string result[], int n) {
     }
 }
 
+int totalDigitsTill(int n) {
+	// Count including 0
+	int total = 1;
+	int digits = 1;
+	int digit_t = 9;
+	while (n/10 > 0) {
+		total += digit_t*digits;
+		n -= digit_t;
+		digit_t *= 10;
+		digits++;
+	}
+	total += n*digits;
+	return total;
+}
+
 #endif	/* UTIL_H */
 

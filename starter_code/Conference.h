@@ -13,11 +13,6 @@ using namespace std;
 
 #include "Track.h"
 
-/**
- * Indexed by paperId. Records pairOf(track,session) of the paper.
- */
-vector<pair<int,int> > paperInfo;
-
 class Conference {
 private:
     // The array of tracks.
@@ -32,6 +27,11 @@ private:
     // The number of papers in a session.
     int papersInSession;
 public:
+    /**
+     * Indexed by paperId. Records pairOf(track,session) of the paper.
+     */
+    vector<pair<int,int> > paperInfo;
+
     Conference();
     
     /**

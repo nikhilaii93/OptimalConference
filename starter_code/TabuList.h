@@ -3,27 +3,22 @@
 
 #include <iostream>
 #include <cstdlib>
-#include <string>
+#include <cstring>
+
 using namespace std;
 
-struct TabuList{
-	string val;
-	TabuList* next;
+struct Tabu{
+	char* val;
+	Tabu* next;
 };
 
-TabuList* headTabu = NULL;
-TabuList* lastTabu = NULL;
-int TABU_LIST_SIZE = 0;
-int CURR_TABU_SIZE = 0;
+void initTabuSize(int size);
 
-public void initTabuSize(int size);
+void enqueueTabu(char* str);
 
-public void enqueueTabu(SessionOrganizer* sorg);
+bool checkTabu(char* str);
 
-public bool checkTabu(SessionOrganizer* sorg);
+void dequeueTabu();
 
-public void dequeueTabu();
-
-public string solToStr(SessionOrganizer* sorg);
 
 #endif	/* TABULIST_H */

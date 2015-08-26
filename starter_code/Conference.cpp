@@ -18,6 +18,7 @@ Conference::Conference ( int parallelTracks, int sessionsInTrack, int papersInSe
     this->parallelTracks = parallelTracks;
     this->sessionsInTrack = sessionsInTrack;
     this->papersInSession = papersInSession;
+    paperInfo.resize(parallelTracks*sessionsInTrack*papersInSession);
     initTracks ( parallelTracks, sessionsInTrack, papersInSession );
 }
 
