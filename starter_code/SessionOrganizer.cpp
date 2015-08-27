@@ -29,20 +29,20 @@ SessionOrganizer::SessionOrganizer ( string filename )
 	int n = pt*st*ps;
 
 	TABU_SIZE = 100;
-	MIN_THRESHOLD = 0.005;
+	MIN_THRESHOLD = 0.01;
 	MIN_IMPROVEMENT = MIN_THRESHOLD;
-	DO_SHOULDER = false;
-	ALLOWED_SHOULDER = 0;
+	DO_SHOULDER = true;
+	ALLOWED_SHOULDER = 1000;
 	TOTAL_SHOULDER = 0;
 	CURR_SHOULDER = 0;
 	DO_BAD_MOVES = false;
-	ALLOWED_BAD_MOVES = 0;
+	ALLOWED_BAD_MOVES = 1000000;
 	TOTAL_BAD_MOVES = 0;
-	BAD_MOVE_THRESHOLD =  11;
+	BAD_MOVE_THRESHOLD =  8;
 
 	BEST_SCORE = 0.0;
 	CURR_SCORE = 0.0;
-	BEST_SOL = (char *)malloc(totalDigitsTill(n)*4);
+	BEST_SOL = (char *)calloc(totalDigitsTill(n)*4,sizeof(char));
 }
 
 class compare
@@ -57,7 +57,6 @@ public:
 
 vector<pair<pair<int,int>,double> > SessionOrganizer::getSwaps()
 {
-	
     if (DEBUG_SESSIONORGANIZER)
         cout << "gSwp1" << endl;
 
@@ -97,18 +96,23 @@ vector<pair<pair<int,int>,double> > SessionOrganizer::getSwaps()
                 pair<pair<int,int>,double> currS = make_pair(currP,diff);
                 if (DEBUG_SESSIONORGANIZER)
                 	cout << "gSwp32" << endl;
-                if (totalSwaps == possSwaps.size()-10) {
+                if (totalSwaps == possSwaps.size()-10)
+                {
                 	possSwaps.resize(possSwaps.size()*2);
                 }
-                possSwaps.push_back(currS);
-                totalSwaps++;
+                possSwaps[totalSwaps++] = currS;
 
                 if (DEBUG_SESSIONORGANIZER)
                 	cout << "gSwp4" << endl;
             }
         }
     }
-    return possSwaps;
+    // To send appropriate sized swaps
+    vector<pair<pair<int,int>,double> > resizedPossSwaps(totalSwaps);
+    for (int i = 0; i < totalSwaps; i++) {
+    	resizedPossSwaps[i] = possSwaps[i];
+    }
+    return resizedPossSwaps;
 }
 
 pair<pair<int,int>,double> SessionOrganizer::getValidSwap(vector<pair<pair<int,int>,double> > possSwaps)
@@ -118,24 +122,28 @@ pair<pair<int,int>,double> SessionOrganizer::getValidSwap(vector<pair<pair<int,i
     for (int i = possSwaps.size()-1; i >= 0 ; i--)
     {
         pair<pair<int,int>,double> possSwap = possSwaps[i];
+        // cout << "gVSwp1" << endl;
 		if (TABU_SIZE > 0)
 		{
 			swapPapers(conference, possSwap.first.first, possSwap.first.second);
 			// Must be freed
 			char* possStr = solToStr();
 			swapPapers(conference, possSwap.first.first, possSwap.first.second);
+			// cout << "gVSwp2 " << possSwap.first.first << " " << possSwap.first.second << endl;
 			if (checkTabu(possStr))
 			{
+				// cout << "gVSwp3 " << getTabuSize() << endl;
 				free(possStr);
 				continue;
 			}
+			// cout << "gVSwp4" << endl;
 		}
-
+		// cout << "gVSwp5" << endl;
 		if (possSwap.second < MIN_IMPROVEMENT)
 		{
 			break;
 		}
-
+		// cout << "gVSwp6: " << validSwap.first.first << " " << validSwap.first.second << endl;
 		validSwap = possSwap;
 		break;
     }
@@ -143,8 +151,7 @@ pair<pair<int,int>,double> SessionOrganizer::getValidSwap(vector<pair<pair<int,i
 }
 
 bool SessionOrganizer::doSomething()
-{   
-	
+{
     if (DEBUG_SESSIONORGANIZER)
         cout << "dSmg1" << endl;
 
@@ -163,26 +170,24 @@ bool SessionOrganizer::doSomething()
     bool DO_RANDOM_SWAPS = false;
     if (rand()%10 + 1 > BAD_MOVE_THRESHOLD)
     {
-    	
     	if (DEBUG_SESSIONORGANIZER)
             cout << "dSmg3" << endl;
-
+    	// cout << "Random Swaps" << endl;
         random_shuffle(possSwaps.begin(), possSwaps.end());
         DO_RANDOM_SWAPS = true;
     }
     else
     {
-    	
         if (DEBUG_SESSIONORGANIZER)
             cout << "dSmg4" << endl;
-
+        // cout << "Sorted Swaps" << endl;
         sort(possSwaps.begin(), possSwaps.end(), compare());
     }
 
     MIN_IMPROVEMENT = MIN_THRESHOLD;
     if (CURR_SHOULDER < ALLOWED_SHOULDER)
     {
-    MIN_IMPROVEMENT = 0;
+    	MIN_IMPROVEMENT = 0;
     }
     if (DO_RANDOM_SWAPS)
     {
@@ -199,7 +204,6 @@ bool SessionOrganizer::doSomething()
 
     if (!(selSwap.first.first == -1 && selSwap.first.second == -1))
     {
-    	
         if (DEBUG_SESSIONORGANIZER)
             cout << "dSmg7" << endl;
 
@@ -219,19 +223,20 @@ bool SessionOrganizer::doSomething()
 
         swapPapers(conference, selSwap.first.first, selSwap.first.second);
 
-        double score = CURR_SCORE + selSwap.second;
-        
+		CURR_SCORE = CURR_SCORE + selSwap.second;
+		// cout << "CURR_SCORE: " << CURR_SCORE << endl;
+
         if (DEBUG_SESSIONORGANIZER)
             cout << "dSmg9" << endl;
 
         // Will be freed on dequeue
         char* solStr = solToStr();
         enqueueTabu(solStr);
-        CURR_SCORE = score;
-        if (BEST_SCORE < scoreOrganization() /* CURR_SCORE > BEST_SCORE */) {
-        	BEST_SCORE = scoreOrganization();
+
+        if (CURR_SCORE > BEST_SCORE)
+        {
+        	BEST_SCORE = CURR_SCORE;
         	cout << "BEST_SCORE: " << BEST_SCORE << endl;
-            // BEST_SCORE = CURR_SCORE;
             strcpy(BEST_SOL,solStr);
         }
         free(solStr);
@@ -245,29 +250,31 @@ bool SessionOrganizer::doSomething()
     }
 }
 
-void SessionOrganizer::organizePapers()
+void SessionOrganizer::organizePapers(long start)
 {   
     if (DEBUG_SESSIONORGANIZER)
         cout << "orgP1" << endl;
 
 	initTabuSize(TABU_SIZE);
-	long start = 0, end = 0;
-    start = time(0);
+	long end = 0;
     
     if (DEBUG_SESSIONORGANIZER)
         cout << "orgP2" << endl;
 
     setRandom();
-    while(processingTimeInMinutes*60-10 > end-start) {
-    	
+    CURR_SCORE = scoreOrganization();
+    while(processingTimeInMinutes*60-5 > end-start)
+    {
         if (DEBUG_SESSIONORGANIZER)
             cout << "orgP3" << endl;
 
-        if (!doSomething()) {
+        if (!doSomething())
+        {
             if (DEBUG_SESSIONORGANIZER)
                 cout << "orgP4" << endl;
-
+            // cout << "Random Move" << endl;
             setRandom();
+            CURR_SCORE = scoreOrganization();
         }
         end = time(0);
     }
@@ -405,7 +412,7 @@ char* SessionOrganizer::solToStr()
 	int ps = conference->getPapersInSession();
 	int n = pt*st*ps;
 
-	char* str = (char *)malloc(totalDigitsTill(n)*4);
+	char* str = (char *)calloc(totalDigitsTill(n)*4,sizeof(char));
 	for ( int i = 0; i < st; i++ )
     {
         for ( int j = 0; j < pt; j++ )
@@ -417,20 +424,23 @@ char* SessionOrganizer::solToStr()
             	int paperId = conference->getTrack(j).getSession(i).getPaper(k);
             	sprintf(paperStr, "%d", paperId);
                 strcat(str,paperStr);
+                strcat(str," ");
             }
-            if ( j != parallelTracks - 1 )
+            if ( j != pt - 1 )
 			{
 				strcat(str, "| ");
 			}
         }
+        strcat(str,"\n");
     }
-	strcat(str,"\n");
     return str;
 }
 
-vector<int> SessionOrganizer::generateRandom(int n) {
+vector<int> SessionOrganizer::generateRandom(int n)
+{
     vector<int> rndSol(n);
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
     	rndSol[i] = i;
     }
     srand(unsigned (time(0)));
@@ -438,7 +448,8 @@ vector<int> SessionOrganizer::generateRandom(int n) {
     return rndSol;
 }
 
-void SessionOrganizer::setRandom() {
+void SessionOrganizer::setRandom()
+{
 	int pt = conference->getParallelTracks();
     int st = conference->getSessionsInTrack();
     int ps = conference->getPapersInSession();
@@ -459,5 +470,6 @@ void SessionOrganizer::setRandom() {
             }
         }
     }
+    // printPaperInfo(conference->paperInfo, 3);
 }
 

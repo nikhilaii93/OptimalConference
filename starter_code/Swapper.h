@@ -23,4 +23,6 @@ void swapSessions(Conference* conference, int track1, int session1, int track2, 
 // This function doesn't actually swap the sessions.
 double getSessionSwapDiff(Conference* conference, int track1, int session1, int track2, int session2, double** distMat);
 
+void printPaperInfo(vector<pair<int,int> > info, int place);
+
 #endif	/* SWAPPER_H */

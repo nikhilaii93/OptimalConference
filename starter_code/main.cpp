@@ -15,6 +15,7 @@ using namespace std;
  */
 int main ( int argc, char** argv )
 {
+	long start = time(0);
     // Parse the input.
     if ( argc < 1 )
     {
@@ -27,7 +28,7 @@ int main ( int argc, char** argv )
     SessionOrganizer *organizer  = new SessionOrganizer( inputfilename );
 
     // Organize the papers into tracks based on similarity.
-    organizer->organizePapers ( );
+    organizer->organizePapers(start);
 
     cout << "organization:"<<endl;
     // organizer->printSessionOrganiser ( );

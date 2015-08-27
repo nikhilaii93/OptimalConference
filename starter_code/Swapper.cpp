@@ -1,6 +1,6 @@
 #include "Swapper.h"
 
-#define DEBUG_SWAPPER 1
+#define DEBUG_SWAPPER 0
 
 double getPaperValue(Conference* conference, int paper, double** distMat, double tradeoffCoefficient)
 {
@@ -58,7 +58,7 @@ void swapPapers(Conference* conference, int paper1, int paper2)
 	Track track1 = conference->getTrack(trackId1);
 	Track track2 = conference->getTrack(trackId2);
 	Session session1 = track1.getSession(sessionId1);
-	Session session2 = track1.getSession(sessionId2);
+	Session session2 = track2.getSession(sessionId2);
 	
 	if (DEBUG_SWAPPER)
 		cout << "swpP3" << endl;
@@ -96,16 +96,15 @@ void swapPapers(Conference* conference, int paper1, int paper2)
 	conference->setPaper(trackId1, sessionId1, ik, paper2);
 	pair<int,int> paper2Info = make_pair(trackId1, sessionId1);
 	conference->paperInfo[paper2] = paper2Info;
-	
+	// printPaperInfo(conference->paperInfo, 1);
+
 	if (DEBUG_SWAPPER)
 		cout << "swpP7" << endl;
-	
-	if (DEBUG_SWAPPER)
-		cout << trackId2 << " " << sessionId2 << " " << jk << " " << paper1 << endl;
 	
 	conference->setPaper(trackId2, sessionId2, jk, paper1);
 	pair<int,int> paper1Info = make_pair(trackId2, sessionId2);
 	conference->paperInfo[paper1] = paper1Info;
+	// printPaperInfo(conference->paperInfo, 2);
 	
 	if (DEBUG_SWAPPER)
 		cout << "swpP8" << endl;
@@ -190,4 +189,13 @@ double getSessionSwapDiff(Conference* conference, int track1, int session1, int 
 	diff -= getSessionValue(conference, track2, session2, distMat);
 
 	return diff;
+}
+
+void printPaperInfo(vector<pair<int,int> > info, int place)
+{
+	for (int i = 0; i < info.size(); i++)
+	{
+		cout << i << " " << info[i].first << " " << info[i].second << endl;
+	}
+	cout << endl;
 }

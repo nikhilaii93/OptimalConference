@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
 
 using namespace std;
 
@@ -19,6 +20,8 @@ void enqueueTabu(char* str);
 bool checkTabu(char* str);
 
 void dequeueTabu();
+
+int getTabuSize();
 
 
 #endif	/* TABULIST_H */

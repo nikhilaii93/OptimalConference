@@ -21,6 +21,7 @@
 #include "Swapper.h"
 #include <time.h>
 #include <cfloat>
+#include <cmath>
 
 using namespace std;
 
@@ -79,7 +80,7 @@ public:
     /**
      * Organize the papers according to some algorithm.
      */
-    void organizePapers();
+    void organizePapers(long start);
     
     
     /**

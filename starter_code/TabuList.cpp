@@ -18,7 +18,7 @@ void enqueueTabu(char* str)
 		{
 			headTabu = (Tabu *)malloc(sizeof(Tabu));
 			headTabu->next = NULL;
-			headTabu->val = (char *)malloc(strlen(str)+1);
+			headTabu->val = (char *)calloc(strlen(str)+1,sizeof(char));
 			strcpy(headTabu->val,str);
 			lastTabu = headTabu;
 		}
@@ -30,7 +30,8 @@ void enqueueTabu(char* str)
 			}
 			Tabu* currTabu = new Tabu;
 			currTabu->next = NULL;
-			currTabu->val = str;
+			currTabu->val = (char *)calloc(strlen(str)+1,sizeof(char));
+			strcpy(currTabu->val,str);
 			lastTabu->next = currTabu;
 			lastTabu = currTabu;
 		}
@@ -62,6 +63,11 @@ void dequeueTabu()
 		free(toDel->val);
 		free(toDel);
 	}
+}
+
+int getTabuSize()
+{
+	return CURR_TABU_SIZE;
 }
 
 
