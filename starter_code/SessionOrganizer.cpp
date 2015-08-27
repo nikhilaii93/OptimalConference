@@ -236,7 +236,9 @@ bool SessionOrganizer::doSomething()
         if (CURR_SCORE > BEST_SCORE)
         {
         	BEST_SCORE = CURR_SCORE;
-        	cout << "BEST_SCORE: " << BEST_SCORE << endl;
+        	// cout << "BEST_SCORE: " << BEST_SCORE << endl;
+        	free(BEST_SOL);
+        	BEST_SOL = (char *)calloc(strlen(solStr)+1,sizeof(char));
             strcpy(BEST_SOL,solStr);
         }
         free(solStr);
@@ -263,7 +265,7 @@ void SessionOrganizer::organizePapers(long start)
 
     setRandom();
     CURR_SCORE = scoreOrganization();
-    while(processingTimeInMinutes*60-5 > end-start)
+    while(processingTimeInMinutes*60-2 > end-start)
     {
         if (DEBUG_SESSIONORGANIZER)
             cout << "orgP3" << endl;
@@ -412,7 +414,10 @@ char* SessionOrganizer::solToStr()
 	int ps = conference->getPapersInSession();
 	int n = pt*st*ps;
 
-	char* str = (char *)calloc(totalDigitsTill(n)*4,sizeof(char));
+	int spA = totalDigitsTill(n)*4;
+	char* str = (char *)calloc(spA,sizeof(char));
+	char* toAppend = str;
+	int totalLen = 0;
 	for ( int i = 0; i < st; i++ )
     {
         for ( int j = 0; j < pt; j++ )
@@ -423,17 +428,27 @@ char* SessionOrganizer::solToStr()
             	char paperStr[10];
             	int paperId = conference->getTrack(j).getSession(i).getPaper(k);
             	sprintf(paperStr, "%d", paperId);
-                strcat(str,paperStr);
-                strcat(str," ");
+            	totalLen += strlen(paperStr);
+            	totalLen += strlen(" ");
+            	while (totalLen > spA-10) {
+            		spA += spA;
+            		char* nStr = (char *)calloc(spA,sizeof(char));
+            		strcpy(nStr,toAppend);
+            		toAppend = nStr;
+            	}
+                strcat(toAppend,paperStr);
+                strcat(toAppend," ");
             }
             if ( j != pt - 1 )
 			{
-				strcat(str, "| ");
+				strcat(toAppend, "| ");
+				totalLen += strlen("| ");
 			}
         }
-        strcat(str,"\n");
+        strcat(toAppend,"\n");
+        totalLen += strlen("\n");
     }
-    return str;
+    return toAppend;
 }
 
 vector<int> SessionOrganizer::generateRandom(int n)

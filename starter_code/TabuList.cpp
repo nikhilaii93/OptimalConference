@@ -46,6 +46,7 @@ bool checkTabu(char* str)
 	{
 		if (!strcmp(curr->val,str))
 		{
+			// cout << "tabbued" << endl;
 			return true;
 		}
 		curr = curr->next;

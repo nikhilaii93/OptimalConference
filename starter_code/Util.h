@@ -40,7 +40,7 @@ int totalDigitsTill(int n) {
 	int total = 1;
 	int digits = 1;
 	int digit_t = 9;
-	while (n/10 > 0) {
+	while (n > digit_t) {
 		total += digit_t*digits;
 		n -= digit_t;
 		digit_t *= 10;

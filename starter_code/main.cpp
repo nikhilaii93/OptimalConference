@@ -30,13 +30,13 @@ int main ( int argc, char** argv )
     // Organize the papers into tracks based on similarity.
     organizer->organizePapers(start);
 
-    cout << "organization:"<<endl;
+    // cout << "organization:"<<endl;
     // organizer->printSessionOrganiser ( );
     cout << organizer->BEST_SOL;
 
     // Score the organization against the gold standard.
     // double score = organizer->scoreOrganization ( );
-    cout<< "score:"<<organizer->BEST_SCORE<<endl;
+    // cout<< "score:"<<organizer->BEST_SCORE<<endl;
 
     return 0;
 }
